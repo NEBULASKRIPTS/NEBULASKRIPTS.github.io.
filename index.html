@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNSTABLE SMP // Fan Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07080c;
+    --ink:#eef2fa;
+    --mut:#aab2c6;
+    --line:#252a3c;
+    --parrot:#2fe06b;
+    --wemmbu:#36b9ff;
+    --flame:#ff5a2c;
+    --spoke:#b15cff;
+    --glitch1:#ff003c;
+    --glitch2:#00f0ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Outfit",sans-serif;
+    line-height:1.55;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* ---- Wemmbu background photo (pulled from his video thumbnail so it always loads) ---- */
+  .bgphoto{
+    position:fixed;inset:0;z-index:-3;
+    background:#07080c url('https://img.youtube.com/vi/7As1EXxthAA/maxresdefault.jpg') center 18% / cover no-repeat;
+    filter:saturate(1.08) contrast(1.02);
+  }
+  .bgveil{
+    position:fixed;inset:0;z-index:-2;
+    background:
+      radial-gradient(1200px 600px at 50% -5%, rgba(54,185,255,.18), transparent 60%),
+      linear-gradient(180deg, rgba(7,8,12,.62) 0%, rgba(7,8,12,.86) 38%, rgba(7,8,12,.96) 70%, #07080c 100%);
+  }
+  /* blocky grid + scanline atmosphere */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(54,185,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(54,185,255,.05) 1px,transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(circle at 50% 0,#000 0,transparent 80%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.16) 3px 4px);
+    opacity:.45;mix-blend-mode:overlay;
+  }
+  .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* ---------- HEADER ---------- */
+  header{position:relative;padding:96px 0 54px;text-align:center}
+  .kicker{
+    font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.42em;
+    color:var(--wemmbu);text-transform:uppercase;margin-bottom:22px;
+  }
+  .kicker span{color:var(--flame)}
+  h1{
+    font-family:"Bungee",cursive;font-size:clamp(2.8rem,11vw,7rem);
+    line-height:.92;letter-spacing:.01em;position:relative;display:inline-block;
+    text-shadow:0 6px 40px rgba(0,0,0,.7);
+  }
+  h1 .glitch{position:relative;color:var(--ink)}
+  h1 .glitch::before,h1 .glitch::after{content:attr(data-t);position:absolute;inset:0}
+  h1 .glitch::before{color:var(--glitch1);animation:gl1 3.4s infinite steps(2)}
+  h1 .glitch::after{color:var(--glitch2);animation:gl2 2.8s infinite steps(2)}
+  @keyframes gl1{0%,92%,100%{transform:translate(0,0);opacity:0}93%{transform:translate(-3px,2px);opacity:.85}96%{transform:translate(2px,-2px);opacity:.6}}
+  @keyframes gl2{0%,90%,100%{transform:translate(0,0);opacity:0}91%{transform:translate(3px,-1px);opacity:.8}97%{transform:translate(-2px,2px);opacity:.5}}
+  .tag{max-width:640px;margin:26px auto 0;color:var(--mut);font-size:1.05rem;font-weight:300;text-shadow:0 2px 14px rgba(0,0,0,.8)}
+  .tag b{color:var(--ink);font-weight:600}
+
+  nav.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:38px}
+  nav.chips a{
+    font-family:"JetBrains Mono",monospace;font-size:.78rem;text-decoration:none;
+    color:var(--ink);border:1px solid var(--line);padding:9px 16px;border-radius:2px;
+    background:rgba(14,16,24,.72);backdrop-filter:blur(4px);transition:.18s;text-transform:uppercase;letter-spacing:.08em;
+  }
+  nav.chips a:hover{transform:translateY(-2px)}
+  nav.chips a[data-c=parrot]:hover{border-color:var(--parrot);color:var(--parrot);box-shadow:0 6px 22px -10px var(--parrot)}
+  nav.chips a[data-c=wemmbu]:hover{border-color:var(--wemmbu);color:var(--wemmbu);box-shadow:0 6px 22px -10px var(--wemmbu)}
+  nav.chips a[data-c=flame]:hover{border-color:var(--flame);color:var(--flame);box-shadow:0 6px 22px -10px var(--flame)}
+  nav.chips a[data-c=spoke]:hover{border-color:var(--spoke);color:var(--spoke);box-shadow:0 6px 22px -10px var(--spoke)}
+
+  .divider{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:14px 0}
+
+  /* ---------- CREATOR CARD ---------- */
+  .creator{padding:74px 0 30px;scroll-margin-top:20px}
+  .ctop{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:6px}
+  .num{font-family:"Bungee",cursive;font-size:clamp(2.6rem,7vw,4.4rem);line-height:.8;-webkit-text-stroke:2px var(--accent);color:transparent;opacity:.9}
+  .cname{font-family:"Bungee",cursive;font-size:clamp(2rem,6vw,3.4rem);line-height:1;color:var(--accent);text-shadow:0 3px 24px rgba(0,0,0,.6)}
+  .handle{font-family:"JetBrains Mono",monospace;font-size:.82rem;color:var(--mut);margin-left:auto;align-self:center}
+  .role{
+    display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.68rem;
+    text-transform:uppercase;letter-spacing:.18em;padding:5px 11px;border-radius:2px;
+    background:color-mix(in srgb,var(--accent) 16%,rgba(7,8,12,.6));
+    color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);margin:10px 0 16px;
+  }
+  .blurb{color:var(--mut);max-width:760px;font-size:1.04rem;font-weight:300;margin-bottom:22px;background:rgba(7,8,12,.35)}
+  .blurb b{color:var(--ink);font-weight:600}
+
+  /* clickable thumbnail (no iframe -> no embed error) */
+  .player{
+    position:relative;display:block;border:1px solid var(--line);border-radius:6px;overflow:hidden;
+    background:#000;aspect-ratio:16/9;box-shadow:0 24px 60px -30px var(--accent);text-decoration:none;
+  }
+  .player img{width:100%;height:100%;object-fit:cover;display:block;transition:.4s;filter:brightness(.78)}
+  .player:hover img{transform:scale(1.04);filter:brightness(.92)}
+  .player::after{content:"";position:absolute;inset:0;border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:6px;pointer-events:none;z-index:6}
+  .player{cursor:pointer}
+  .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:5;display:block}
+  .ytfallback{
+    position:absolute;top:10px;right:10px;z-index:7;
+    font-family:"JetBrains Mono",monospace;font-size:.66rem;text-decoration:none;letter-spacing:.04em;
+    color:#fff;background:rgba(7,8,12,.72);border:1px solid var(--line);padding:5px 9px;border-radius:3px;transition:.18s;
+  }
+  .ytfallback:hover{border-color:var(--accent);color:var(--accent)}
+  .player.playing img,.player.playing .playbtn,.player.playing .vidtitle,.player.playing .ytfallback{display:none}
+  .playbtn{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:78px;height:78px;border-radius:50%;display:grid;place-items:center;
+    background:color-mix(in srgb,var(--accent) 88%,#000);color:#07080c;font-size:1.8rem;padding-left:6px;
+    box-shadow:0 10px 40px -6px var(--accent);transition:.2s;
+  }
+  .player:hover .playbtn{transform:translate(-50%,-50%) scale(1.1)}
+  .vidtitle{
+    position:absolute;left:0;right:0;bottom:0;padding:30px 18px 14px;
+    font-family:"Outfit",sans-serif;font-weight:600;font-size:1.02rem;color:#fff;
+    background:linear-gradient(transparent,rgba(0,0,0,.85));
+  }
+  .plbar{display:flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--mut);margin:12px 2px 16px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 1.8s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+
+  .links{display:flex;flex-wrap:wrap;gap:10px}
+  .links a{font-family:"JetBrains Mono",monospace;font-size:.78rem;text-decoration:none;padding:11px 17px;border-radius:3px;letter-spacing:.04em;transition:.18s;display:inline-flex;align-items:center;gap:8px}
+  .btn-main{background:var(--accent);color:#07080c;font-weight:700}
+  .btn-main:hover{filter:brightness(1.12);transform:translateY(-2px)}
+  .btn-ghost{border:1px solid var(--line);color:var(--ink);background:rgba(14,16,24,.72)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+  footer{margin:70px 0 60px;padding-top:30px;border-top:1px solid var(--line);text-align:center}
+  footer p{color:var(--mut);font-size:.86rem;font-family:"JetBrains Mono",monospace}
+  footer a{color:var(--wemmbu);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .all{margin-top:18px}
+  .all a{font-family:"JetBrains Mono",monospace;font-size:.8rem;text-decoration:none;color:var(--ink);border:1px dashed var(--line);padding:11px 20px;border-radius:3px;transition:.18s}
+  .all a:hover{border-color:var(--flame);color:var(--flame)}
+
+  @media(max-width:560px){
+    .handle{margin-left:0;width:100%}
+    header{padding-top:70px}
+    .playbtn{width:60px;height:60px;font-size:1.4rem}
+  }
+</style>
+</head>
+<body>
+<div class="bgphoto"></div>
+<div class="bgveil"></div>
+<div class="wrap">
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="kicker">A STAGED MINECRAFT SERVER &nbsp;//&nbsp; <span>PVP IS ALWAYS ON</span></div>
+    <h1><span class="glitch" data-t="UNSTABLE">UNSTABLE</span><br><span class="glitch" data-t="SMP" style="color:var(--flame)">SMP</span></h1>
+    <p class="tag">Four protagonists. One collapsing world. The <b>Unstable Universe</b> is where <b>Parrot</b>, <b>Wemmbu</b>, <b>FlameFrags</b> and <b>Spoke</b> wage kingdoms, wars and betrayals to tell the best story possible. Pick a POV and press play.</p>
+    <nav class="chips">
+      <a href="#parrot" data-c="parrot">&#129413; Parrot</a>
+      <a href="#wemmbu" data-c="wemmbu">&#9876; Wemmbu</a>
+      <a href="#flame" data-c="flame">&#128293; FlameFrags</a>
+      <a href="#spoke" data-c="spoke">&#127744; Spoke</a>
+    </nav>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- ===== PARROT ===== -->
+  <section class="creator" id="parrot" style="--accent:var(--parrot)">
+    <div class="ctop"><div class="num">01</div><div class="cname">PARROT</div><div class="handle">@ParrotX2</div></div>
+    <div class="role">The King &middot; District 13</div>
+    <p class="blurb">The reigning <b>King of the Unstable Universe</b>. ParrotX2 is the server's calculated strategist &mdash; light on raw PvP, heavyweight on outsmarting everyone in the room. Famous for handing riches to new players and turning a single button-press into a world-ending saga.</p>
+    <div class="player" data-yt="TphfLyzVbqQ">
+      <img src="https://img.youtube.com/vi/TphfLyzVbqQ/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/TphfLyzVbqQ/hqdefault.jpg'" alt="Parrot - 100 Days as King of the Unstable SMP">
+      <span class="playbtn">&#9654;</span>
+      <span class="vidtitle">100 Days as King of the Unstable SMP</span>
+      <a class="ytfallback" href="https://www.youtube.com/watch?v=TphfLyzVbqQ" target="_blank" rel="noopener">YouTube &#8599;</a>
+    </div>
+    <div class="plbar"><span class="dot"></span> FEATURED EPISODE &mdash; click to watch on YouTube</div>
+    <div class="links">
+      <a class="btn-main" href="https://www.youtube.com/playlist?list=PLu0onnEWPanu3QkFcTyONG2uvj4RJHXaY" target="_blank" rel="noopener">&#9654; All Parrot episodes</a>
+      <a class="btn-ghost" href="https://www.youtube.com/@ParrotX2" target="_blank" rel="noopener">Channel</a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== WEMMBU ===== -->
+  <section class="creator" id="wemmbu" style="--accent:var(--wemmbu)">
+    <div class="ctop"><div class="num">02</div><div class="cname">WEMMBU</div><div class="handle">@wemmbumc</div></div>
+    <div class="role">The Escapist &middot; Eggchan's Duo</div>
+    <p class="blurb">If there's a prison on the server, Wemmbu has broken out of it. Hunted by <b>ClownPierce</b>, locked in Proton, thrown into forgotten dimensions &mdash; and still standing alongside ride-or-die partner <b>Eggchan</b>. Orbital strike cannons optional but encouraged.</p>
+    <div class="player" data-yt="7As1EXxthAA">
+      <img src="https://img.youtube.com/vi/7As1EXxthAA/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/7As1EXxthAA/hqdefault.jpg'" alt="Wemmbu - I Escaped Minecraft's Forgotten Dimension">
+      <span class="playbtn">&#9654;</span>
+      <span class="vidtitle">I Escaped Minecraft's Forgotten Dimension</span>
+      <a class="ytfallback" href="https://www.youtube.com/watch?v=7As1EXxthAA" target="_blank" rel="noopener">YouTube &#8599;</a>
+    </div>
+    <div class="plbar"><span class="dot"></span> FEATURED EPISODE &mdash; click to watch on YouTube</div>
+    <div class="links">
+      <a class="btn-main" href="https://www.youtube.com/playlist?list=PLFyNzacTRFYcuFZLfGWjer4zxBgqibdIF" target="_blank" rel="noopener">&#9654; All Wemmbu episodes</a>
+      <a class="btn-ghost" href="https://www.youtube.com/@wemmbumc" target="_blank" rel="noopener">Channel</a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== FLAMEFRAGS ===== -->
+  <section class="creator" id="flame" style="--accent:var(--flame)">
+    <div class="ctop"><div class="num">03</div><div class="cname">FLAMEFRAGS</div><div class="handle">@FlameFragsMC</div></div>
+    <div class="role">The Duelist &middot; Code of Honor</div>
+    <p class="blurb">The server's combat ace. A former <b>Zam Empire</b> guard turned protagonist, Flame fights with pure skill and a strict code &mdash; he famously refused to touch a mace. Added to the POV lineup later than the rest, he's spent every episode since proving he belongs.</p>
+    <div class="player" data-yt="Vhnn_sG7xUk">
+      <img src="https://img.youtube.com/vi/Vhnn_sG7xUk/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/Vhnn_sG7xUk/hqdefault.jpg'" alt="FlameFrags - I Became Immortal on a Hardcore Minecraft Server">
+      <span class="playbtn">&#9654;</span>
+      <span class="vidtitle">I Became Immortal on a Hardcore Minecraft Server</span>
+      <a class="ytfallback" href="https://www.youtube.com/watch?v=Vhnn_sG7xUk" target="_blank" rel="noopener">YouTube &#8599;</a>
+    </div>
+    <div class="plbar"><span class="dot"></span> FEATURED EPISODE &mdash; click to watch on YouTube</div>
+    <div class="links">
+      <a class="btn-main" href="https://www.youtube.com/playlist?list=PLhS7X27229a_itTyKEGJ1Mj-cAwfy1ked" target="_blank" rel="noopener">&#9654; FlameFrags playlist</a>
+      <a class="btn-ghost" href="https://www.youtube.com/@FlameFragsMC" target="_blank" rel="noopener">Channel</a>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== SPOKE ===== -->
+  <section class="creator" id="spoke" style="--accent:var(--spoke)">
+    <div class="ctop"><div class="num">04</div><div class="cname">SPOKE</div><div class="handle">@Spokeishere</div></div>
+    <div class="role">The Schemer &middot; Manipulator</div>
+    <p class="blurb">Chaos with a plan. SpokeIsHere bends every situation to his own ends, lying even to his closest allies and treating every wrongdoing as "justified." He lures enemies into the same room and lets them destroy each other &mdash; then walks off with the loot.</p>
+    <div class="player" data-yt="U7TCIEmotdI">
+      <img src="https://img.youtube.com/vi/U7TCIEmotdI/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/U7TCIEmotdI/hqdefault.jpg'" alt="Spoke - I Spent 100 Days Hidden in a Secret Minecraft Base">
+      <span class="playbtn">&#9654;</span>
+      <span class="vidtitle">I Spent 100 Days Hidden in a Secret Minecraft Base</span>
+      <a class="ytfallback" href="https://www.youtube.com/watch?v=U7TCIEmotdI" target="_blank" rel="noopener">YouTube &#8599;</a>
+    </div>
+    <div class="plbar"><span class="dot"></span> FEATURED EPISODE &mdash; click to watch on YouTube</div>
+    <div class="links">
+      <a class="btn-main" href="https://www.youtube.com/playlist?list=PLYmAm1lW6hlilkWT6nrzObvTjPNwVOvq6" target="_blank" rel="noopener">&#9654; Spoke playlist</a>
+      <a class="btn-ghost" href="https://www.youtube.com/@Spokeishere" target="_blank" rel="noopener">Channel</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="all"><a href="https://unstable-universe-mc.fandom.com/wiki/Unstable_Universe_Wiki" target="_blank" rel="noopener">&#128214; Read the lore on the Unstable Universe Wiki</a></div>
+    <p style="margin-top:22px">Unofficial fan hub &middot; all videos &amp; characters belong to their respective creators<br>
+    <a href="https://www.youtube.com/@ParrotX2" target="_blank" rel="noopener">Parrot</a> &middot;
+    <a href="https://www.youtube.com/@wemmbumc" target="_blank" rel="noopener">Wemmbu</a> &middot;
+    <a href="https://www.youtube.com/@FlameFragsMC" target="_blank" rel="noopener">FlameFrags</a> &middot;
+    <a href="https://www.youtube.com/@Spokeishere" target="_blank" rel="noopener">Spoke</a></p>
+  </footer>
+
+</div>
+<script>
+  document.querySelectorAll('.player[data-yt]').forEach(function(p){
+    p.addEventListener('click', function(e){
+      if (e.target.closest('.ytfallback')) return;      // let the corner link open YouTube
+      if (p.classList.contains('playing')) return;       // already loaded
+      var id = p.getAttribute('data-yt');
+      var f = document.createElement('iframe');
+      f.src = 'https://www.youtube-nocookie.com/embed/' + id +
+              '?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+      f.title = 'Unstable SMP video';
+      f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+      f.setAttribute('allowfullscreen', '');
+      p.classList.add('playing');
+      p.appendChild(f);
+    });
+  });
+</script>
+</body>
+</html>
